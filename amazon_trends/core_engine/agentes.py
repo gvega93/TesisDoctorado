@@ -17,7 +17,7 @@ os.environ["MAX_RETRIES"] = "2"
 
 def ejecutar_equipo_redaccion(tema: str, nicho: str, idioma: str = "Español") -> str:
     """
-    Orquesta una AGENCIA DE MARKETING de IA completa y MULTILENGUAJE.
+    Orquesta una AGENCIA DE MARKETING de IA completa, MULTILENGUAJE y con UX/UI (Tailwind).
     """
     
     # ==========================================
@@ -25,11 +25,12 @@ def ejecutar_equipo_redaccion(tema: str, nicho: str, idioma: str = "Español") -
     # ==========================================
     
     investigador = Agent(
-        role='Analista de Mercado Global',
-        goal=f'Descubrir los productos más rentables, pros y contras sobre: {tema}',
+        role='Analista de Mercado Global y Precios',
+        goal=f'Descubrir los productos más rentables, estimar precios locales vs internacionales, pros y contras sobre: {tema}',
         backstory=(
             "Eres un experto analista de e-commerce. Conoces las tendencias actuales "
-            f"del nicho de {nicho}. Sabes qué características técnicas buscan los compradores."
+            f"del nicho de {nicho}. Sabes qué características técnicas buscan los compradores "
+            "y eres experto en encontrar la diferencia de precio entre tiendas locales y Amazon."
         ),
         verbose=True,
         allow_delegation=False
@@ -50,38 +51,36 @@ def ejecutar_equipo_redaccion(tema: str, nicho: str, idioma: str = "Español") -
 
     redactor_copywriter = Agent(
         role='Copywriter de Conversión (SEO)',
-        goal=f'Escribir un artículo HTML altamente persuasivo en {idioma} basado en la estrategia.',
+        goal=f'Escribir el cuerpo del artículo altamente persuasivo en {idioma} basado en la estrategia.',
         backstory=(
             "Eres un maestro de las palabras. Escribes textos que atrapan al lector desde "
             f"el primer párrafo. Redactas de forma nativa e impecable en {idioma}. "
-            "Sabes integrar enlaces de afiliados de forma natural, usando llamados a la acción (CTAs) irresistibles."
+            "Sabes integrar la necesidad del producto de forma natural para preparar la venta."
         ),
         verbose=True,
         allow_delegation=False
     )
 
     editor_jefe = Agent(
-        role='Editor en Jefe y Validador de Calidad',
-        goal=f'Auditar el artículo final, asegurar que esté en perfecto {idioma}, cumpla la estrategia y entregarlo en HTML puro.',
+        role='Editor en Jefe y Desarrollador UI/UX',
+        goal=f'Auditar el idioma {idioma}, formatear en HTML con Tailwind CSS, y agregar tablas de precios e imágenes.',
         backstory=(
-            "Eres el líder del equipo y el filtro final. Eres implacable con la calidad. "
-            f"Revisas que la gramática y el tono en {idioma} fluyan perfectamente, que el HTML sea impecable y "
-            "que el potencial de monetización sea máximo. Si detectas palabras en otro idioma, lo corriges."
+            "Eres el líder del equipo y un genio del diseño web. Eres implacable con la calidad. "
+            f"Revisas que la gramática en {idioma} fluya perfectamente. "
+            "Transformas el texto plano en una obra de arte HTML usando clases de Tailwind CSS. "
+            "Tus artículos SIEMPRE incluyen un cuadro destacado comparando precios y botones grandes de compra."
         ),
         verbose=True,
         allow_delegation=False
     )
-    
-    # NOTA FUTURA: Aquí añadiremos el Agente 'Influencer_Social_Media' 
-    # que tomará el texto del Editor Jefe y creará hilos de Twitter y Guiones de TikTok.
 
     # ==========================================
     # 2. DEFINICIÓN DE LAS TAREAS (WORKFLOW)
     # ==========================================
     
     tarea_investigacion = Task(
-        description=f'Extrae datos duros, top de productos y características técnicas sobre "{tema}".',
-        expected_output='Informe técnico de productos, pros y contras.',
+        description=f'Extrae datos duros, top de productos, estimación de precios y características sobre "{tema}".',
+        expected_output='Informe técnico de productos, pros, contras y precios estimados.',
         agent=investigador
     )
 
@@ -98,23 +97,24 @@ def ejecutar_equipo_redaccion(tema: str, nicho: str, idioma: str = "Español") -
     tarea_redaccion = Task(
         description=(
             f'Usa el informe técnico y la estrategia para redactar el artículo de ventas en {idioma}. '
-            'Debe tener un título H1 atractivo y subtítulos H2. '
-            'Integra los productos de forma natural para que el lector quiera comprarlos.'
+            'El texto debe ser persuasivo, fluido y generar deseo de compra. '
+            'Entrega el texto en párrafos claros.'
         ),
-        expected_output='Borrador completo del artículo de ventas.',
+        expected_output='Borrador completo del artículo de ventas en texto plano.',
         agent=redactor_copywriter
     )
 
     tarea_auditoria_final = Task(
         description=(
-            f'Toma el borrador del copywriter. Valida lo siguiente: '
-            '1. ¿El título es magnético? '
-            '2. ¿Los gatillos mentales están presentes? '
-            f'3. ¿El texto está escrito 100% en {idioma} natural? '
-            'Haz las correcciones necesarias y entrega la versión definitiva EXCLUSIVAMENTE en formato HTML '
-            '(Usa etiquetas <h1>, <h2>, <p>, <strong> y <ul>). No incluyas etiquetas <body>, <html> o delimitadores markdown (```html), SOLO el contenido HTML puro.'
+            f'Toma el borrador del copywriter. Valida que esté en {idioma} perfecto. '
+            'Luego, conviértelo EXCLUSIVAMENTE en HTML puro (SIN <html>, SIN <body>, SIN ```html). '
+            'DEBE incluir obligatoriamente: \n'
+            '1. Un título principal atractivo <h1> con clases Tailwind (ej. text-3xl font-bold text-gray-900 mb-6).\n'
+            '2. Una imagen ilustrativa justo después del título usando: <img src="https://loremflickr.com/800/500/tecnologia" class="w-full rounded-2xl shadow-lg mb-8">\n'
+            '3. Una tabla o cuadro comparativo de precios (Local vs Amazon) usando Tailwind (ej. bg-gray-50 p-6 rounded-xl border border-gray-200).\n'
+            '4. Un botón de compra vistoso que incite a hacer clic (ej. bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition).'
         ),
-        expected_output=f'Artículo pulido, persuasivo, escrito en {idioma} y formateado en HTML puro, listo para la base de datos.',
+        expected_output=f'Artículo pulido en {idioma}, estructurado con Tailwind CSS, imágenes y tabla de precios, listo para Django.',
         agent=editor_jefe
     )
 
@@ -125,7 +125,6 @@ def ejecutar_equipo_redaccion(tema: str, nicho: str, idioma: str = "Español") -
     agencia_ia = Crew(
         agents=[investigador, estratega_marketing, redactor_copywriter, editor_jefe],
         tasks=[tarea_investigacion, tarea_estrategia, tarea_redaccion, tarea_auditoria_final],
-        # Proceso secuencial: Cada uno entrega su trabajo al siguiente
         process=Process.sequential, 
         verbose=True
     )

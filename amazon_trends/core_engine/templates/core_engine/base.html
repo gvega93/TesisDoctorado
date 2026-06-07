@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ portal.nombre_sitio }}{% endblock %}</title>
+    <title>{% block title %}{{ portal.nombre_tienda|default:"Smart Deals" }}{% endblock %}</title>
     
-    <!-- CDN de Tailwind CSS con el Plugin de Tipografía (CRÍTICO para los artículos de la IA) -->
+    <!-- CDN de Tailwind CSS con el Plugin de Tipografía (VITAL para los artículos de la IA) -->
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     
     <!-- Configuración personalizada de colores -->
@@ -14,7 +14,7 @@
             theme: {
                 extend: {
                     colors: {
-                        marca: '#4F46E5', // Un azul índigo moderno y de confianza
+                        marca: '#4F46E5', // Azul índigo premium
                     }
                 }
             }
@@ -23,18 +23,18 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- Navbar de Alta Conversión -->
+    <!-- Navbar Premium -->
     <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex-shrink-0 flex items-center">
-                    <a href="{% url 'tienda_publica' portal.sub_id_afiliado %}" class="text-2xl font-black text-gray-900 tracking-tighter">
-                        {{ portal.nombre_sitio }}<span class="text-marca">.</span>
+                    <a href="{% url 'tienda_home' portal.beneficiario.username %}" class="text-2xl font-black text-gray-900 tracking-tighter hover:text-marca transition">
+                        {{ portal.nombre_tienda|default:"Smart Deals" }}<span class="text-marca">.</span>
                     </a>
                 </div>
                 <div class="hidden sm:flex items-center space-x-4">
-                    <span class="bg-indigo-50 text-marca px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
-                        Nicho: {{ portal.nicho }}
+                    <span class="bg-indigo-50 text-marca px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide">
+                        Nicho: {{ portal.nicho|default:"Global" }}
                     </span>
                 </div>
             </div>
@@ -50,12 +50,13 @@
 
     <!-- Footer Minimalista -->
     <footer class="bg-white border-t border-gray-200 mt-12">
-        <div class="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
-            <p class="text-gray-500 text-sm">
-                &copy; 2026 {{ portal.nombre_sitio }}. Todos los derechos reservados.
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-gray-500 text-sm font-medium">
+                &copy; 2026 {{ portal.nombre_tienda|default:"Smart Deals" }}. Todos los derechos reservados.
             </p>
-            <p class="text-gray-400 text-xs mt-2">
-                En calidad de Afiliado de Amazon, obtenemos ingresos por las compras adscritas que cumplen los requisitos aplicables.
+            <p class="text-gray-400 text-xs mt-3 max-w-2xl mx-auto">
+                En calidad de Afiliado de Amazon, obtenemos ingresos por las compras adscritas que cumplen los requisitos aplicables. 
+                Los precios y la disponibilidad de los productos son precisos en la fecha/hora indicada y están sujetos a cambios.
             </p>
         </div>
     </footer>

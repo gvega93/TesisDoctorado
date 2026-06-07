@@ -16,9 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from core_engine.views import redireccion_raiz
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # Conectamos las rutas de nuestra app. La ruta final será /api/core/tendencias/ingestar/
+    
+    # Rutas de la API y de las Tiendas SaaS
     path('api/core/', include('core_engine.urls')),
+    
+    # LA MAGIA UX: Redirección automática cuando entras a 127.0.0.1:8000
+    path('', redireccion_raiz, name='inicio_redireccion'),
 ]

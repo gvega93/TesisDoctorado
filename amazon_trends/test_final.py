@@ -10,9 +10,9 @@ from core_engine.models import Beneficiario, Portal, BilleteraUsuario, Tendencia
 from core_engine.tasks import procesar_tendencia_ia
 
 def ejecutar_prueba_final():
-    print("\n--- 🚀 INICIANDO PRUEBA DE EXTREMO A EXTREMO (END-TO-END) ---")
+    print("\n--- 🚀 INICIANDO PRUEBA DE LA AGENCIA DE MARKETING IA ---")
     
-    # 1. Crear un usuario "Beneficiario" de prueba (Población vulnerable)
+    # 1. Crear usuario Beneficiario
     user, created = Beneficiario.objects.get_or_create(
         username='maria_emprende',
         defaults={'telefono_nequi': '3009876543'}
@@ -20,28 +20,25 @@ def ejecutar_prueba_final():
     if created:
         user.set_password('password123')
         user.save()
-        print("✔️ Beneficiario 'maria_emprende' creado.")
 
-    # 2. Darle una billetera con saldo para que la IA funcione
+    # 2. Billetera IA
     BilleteraUsuario.objects.get_or_create(
         beneficiario=user,
         defaults={'saldo_consumo_ia': Decimal('10.00')}
     )
 
-    # 3. Crear su Portal Web Automatizado
+    # 3. Portal Web
     sub_id = 'maria-tech-01'
     portal, p_created = Portal.objects.get_or_create(
         beneficiario=user,
         dominio='https://marias-tech.com',
         defaults={
-            'nombre_sitio': 'Tecnología para Todos',
+            'nombre_tienda': 'Tecnología para Todos',
             'sub_id_afiliado': sub_id,
             'nicho': 'Tecnología y Gadgets',
             'estado': 'activo'
         }
     )
-    if p_created:
-        print(f"✔️ Portal '{portal.nombre_sitio}' creado.")
 
     # 4. Simular que el Scraper encontró una tendencia
     tendencia, t_created = Tendencia.objects.get_or_create(
@@ -50,14 +47,14 @@ def ejecutar_prueba_final():
         defaults={'puntuacion_viral': 95}
     )
 
-    print(f"\n📡 Enviando la orden a los agentes para investigar: '{tendencia.termino_busqueda}'...")
+    print(f"\n📡 Enviando la orden a la Agencia IA para investigar: '{tendencia.termino_busqueda}'...")
     
-    # 5. Enviar la orden a Celery pasando los IDs reales de la base de datos
+    # 5. Enviar la orden a Celery
     resultado = procesar_tendencia_ia.delay(tendencia.id, portal.id, "Español")
 
     print(f"✔️ Orden enviada a Celery (ID: {resultado.id})")
-    print(f"🌐 Cuando el agente termine, tu página web estará disponible en:")
-    print(f"   --> http://127.0.0.1:8000/api/core/tienda/{sub_id}/")
+    print(f"🌐 Tu página web (El Home de los 4 Cuadrantes) ya está disponible en:")
+    print(f"   --> http://127.0.0.1:8000/api/core/tienda/{user.username}/")
     print("\n⏳ Ve a la terminal de Celery para ver a los agentes escribir...")
 
 if __name__ == "__main__":

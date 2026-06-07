@@ -1,0 +1,55 @@
+{% extends 'core_engine/base.html' %}
+
+{% block title %}{{ articulo.titulo }} - {{ portal.nombre_tienda }}{% endblock %}
+
+{% block content %}
+<!-- Cabecera del Artículo -->
+<header class="bg-white border-b border-gray-200 pt-20 pb-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="flex justify-center items-center space-x-3 text-sm font-bold text-marca mb-6 uppercase tracking-widest">
+            <span class="bg-indigo-50 px-3 py-1 rounded-md">{{ articulo.get_categoria_display }}</span>
+            <span>&bull;</span>
+            <span>{{ articulo.fecha_publicacion|date:"d M, Y" }}</span>
+        </div>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 tracking-tight leading-tight mb-8">
+            {{ articulo.titulo }}
+        </h1>
+        <div class="flex items-center justify-center text-gray-500 text-base font-medium">
+            <svg class="w-6 h-6 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+            {{ articulo.vistas }} lectores están viendo esta oferta
+        </div>
+    </div>
+</header>
+
+<!-- Contenido del Artículo (Renderizado Mágico) -->
+<div class="bg-gray-50 py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8 sm:p-16 relative overflow-hidden">
+            
+            <!-- Decoración sutil de fondo -->
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-gradient-to-br from-indigo-100 to-white rounded-full opacity-50 blur-2xl"></div>
+
+            <!-- 
+                La clase 'prose' es el Plugin de Tipografía de Tailwind.
+                Le da formato automático a las tablas de precios, títulos H2 y párrafos
+                que nuestra Agencia de IA generó en HTML puro. 
+            -->
+            <article class="prose prose-lg prose-indigo mx-auto max-w-none text-gray-700 relative z-10 prose-headings:font-black prose-a:text-marca prose-a:no-underline hover:prose-a:underline prose-img:rounded-2xl prose-img:shadow-lg">
+                {{ articulo.contenido_html|safe }}
+            </article>
+
+            <!-- Bloque de Call to Action Final (Opcional) -->
+            <div class="mt-16 pt-10 border-t border-gray-100 text-center relative z-10 bg-indigo-50/50 rounded-3xl p-8">
+                <h3 class="text-2xl font-black text-gray-900 mb-4">¿Te decidiste a aprovechar la oferta?</h3>
+                <p class="text-gray-600 mb-8 max-w-md mx-auto">Recuerda que los precios en Amazon cambian constantemente. Asegura este precio antes de que se agote el inventario.</p>
+                <a href="https://www.amazon.com" target="_blank" rel="noopener nofollow" class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-2xl text-white bg-marca hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-200 transform hover:-translate-y-1">
+                    Ver el mejor precio en Amazon ahora
+                    <svg class="ml-2 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </a>
+                <p class="text-xs font-medium text-gray-400 mt-4 uppercase tracking-widest">Pago 100% Seguro</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
