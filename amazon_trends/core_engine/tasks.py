@@ -1,22 +1,26 @@
 from celery import shared_task
-import time
+from .agentes import ejecutar_equipo_redaccion
 
 @shared_task
-def procesar_tendencia_ia(tendencia_nombre, portal_dominio):
+def procesar_tendencia_ia(tendencia_nombre, portal_dominio, nicho="Tecnología"):
     """
-    Esta función simula el trabajo pesado de un Agente IA (CrewAI).
-    En lugar de bloquear el servidor web, se ejecutará en segundo plano.
+    Tarea asíncrona que lanza el equipo de CrewAI.
     """
-    print(f"🤖 [AGENTE INICIADO]: Investigando la tendencia '{tendencia_nombre}' en la web...")
+    print(f"🤖 [CELERY]: Iniciando equipo CrewAI para el tema '{tendencia_nombre}'...")
     
-    # Simulamos que la IA tarda 10 segundos leyendo, resumiendo y escribiendo
-    time.sleep(10) 
-    
-    print(f"✍️ [AGENTE TRABAJANDO]: Redactando el artículo para {portal_dominio}...")
-    
-    # Simulamos que tarda 5 segundos más publicando en WordPress
-    time.sleep(5)
-    
-    print(f"✅ [AGENTE TERMINÓ]: Artículo sobre '{tendencia_nombre}' publicado con éxito en {portal_dominio}!")
-    
-    return f"Éxito: {tendencia_nombre} procesado."
+    try:
+        # Llamamos a nuestro orquestador
+        articulo_generado = ejecutar_equipo_redaccion(tema=tendencia_nombre, nicho=nicho)
+        
+        print(f"✅ [CELERY]: Artículo generado con éxito. Longitud: {len(articulo_generado)} caracteres.")
+        print("--- EXTRACTO DEL ARTÍCULO ---")
+        print(articulo_generado[:300] + "...") # Imprimimos los primeros 300 caracteres
+        
+        # Aquí en el futuro agregaremos el código para enviar este texto a WordPress
+        
+        return f"Éxito: Artículo sobre {tendencia_nombre} generado."
+        
+    except Exception as e:
+        print(f"❌ [CELERY ERROR CRÍTICO]: Fallo en CrewAI: {str(e)}")
+        return f"Error: {str(e)}"
+
