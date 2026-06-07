@@ -1,0 +1,10 @@
+para realizar version github
+
+# 1. Asegurar la rama principal
+git branch -M main
+
+# 2. Conectar con tu URL REAL (Asegúrate de pegar la tuya)
+git remote add origin https://github.com/gvega93/amazon-trends-engine.git
+
+# 3. Empujar el código a la nube
+git push -u origin main
