@@ -1,0 +1,51 @@
+{% extends 'core_engine/base.html' %}
+
+{% block title %}{{ articulo.titulo }} - {{ portal.nombre_sitio }}{% endblock %}
+
+{% block content %}
+<!-- Cabecera del Artículo -->
+<header class="bg-white border-b border-gray-200 pt-16 pb-12">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="flex justify-center items-center space-x-2 text-sm font-medium text-marca mb-4 uppercase tracking-wide">
+            <span>{{ portal.nicho }}</span>
+            <span>&bull;</span>
+            <span>{{ articulo.fecha_publicacion|date:"d M, Y" }}</span>
+        </div>
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight mb-6">
+            {{ articulo.titulo }}
+        </h1>
+        <div class="flex items-center justify-center text-gray-500 text-sm">
+            <svg class="w-5 h-5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+            {{ articulo.vistas }} lectores interesados
+        </div>
+    </div>
+</header>
+
+<!-- Contenido del Artículo (Renderizado Mágico) -->
+<div class="bg-gray-50 py-12">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sm:p-12">
+            
+            <!-- 
+                La clase 'prose' es el Plugin de Tipografía de Tailwind.
+                Le da formato automático y hermoso a los H1, H2, listas y párrafos
+                que nuestra Agencia de IA generó en HTML puro. 
+                El filtro '|safe' le dice a Django que confíe en este HTML y lo renderice.
+            -->
+            <article class="prose prose-lg prose-indigo mx-auto max-w-none text-gray-700">
+                {{ articulo.contenido_html|safe }}
+            </article>
+
+            <!-- Bloque de Call to Action Final (Opcional) -->
+            <div class="mt-12 pt-8 border-t border-gray-100 text-center">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">¿Encontraste lo que buscabas?</h3>
+                <a href="https://www.amazon.com" target="_blank" rel="noopener nofollow" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-marca hover:bg-indigo-700 transition-colors shadow-md">
+                    Ver las mejores ofertas en Amazon &rarr;
+                </a>
+                <p class="text-xs text-gray-400 mt-3">Al hacer clic serás redirigido a Amazon de forma segura.</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -38,3 +38,31 @@ class IngestaTendenciasAPIView(APIView):
             "nuevos_registros": len(nuevas_tendencias),
             "duplicados_omitidos": duplicados
         }, status=status.HTTP_201_CREATED)
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import Portal, Articulo
+
+def tienda_publica(request, sub_id_afiliado):
+    """Muestra el portal de un usuario específico usando su sub_id."""
+    portal = get_object_or_404(Portal, sub_id_afiliado=sub_id_afiliado)
+    articulos = portal.articulos.all().order_by('-fecha_publicacion')
+    
+    return render(request, 'core_engine/tienda.html', {
+        'portal': portal,
+        'articulos': articulos
+    })
+
+def leer_articulo(request, sub_id_afiliado, slug):
+    """Muestra el artículo completo."""
+    portal = get_object_or_404(Portal, sub_id_afiliado=sub_id_afiliado)
+    articulo = get_object_or_404(Articulo, portal=portal, slug=slug)
+    
+    # Sumar una visita
+    articulo.vistas += 1
+    articulo.save(update_fields=['vistas'])
+    
+    return render(request, 'core_engine/articulo.html', {
+        'portal': portal,
+        'articulo': articulo
+    })

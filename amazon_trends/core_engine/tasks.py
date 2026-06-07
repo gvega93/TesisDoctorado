@@ -1,26 +1,42 @@
 from celery import shared_task
 from .agentes import ejecutar_equipo_redaccion
+from .models import Portal, Articulo, Tendencia
 
 @shared_task
-def procesar_tendencia_ia(tendencia_nombre, portal_dominio, nicho="Tecnología"):
+def procesar_tendencia_ia(tendencia_id, portal_id, idioma="Español"):
     """
-    Tarea asíncrona que lanza el equipo de CrewAI.
+    1. Lee la tendencia y el portal de la base de datos.
+    2. Envía a la Agencia IA a redactar.
+    3. Guarda el artículo publicado en el portal.
     """
-    print(f"🤖 [CELERY]: Iniciando equipo CrewAI para el tema '{tendencia_nombre}'...")
-    
     try:
-        # Llamamos a nuestro orquestador
-        articulo_generado = ejecutar_equipo_redaccion(tema=tendencia_nombre, nicho=nicho)
+        # 1. Traer los datos reales de la BD
+        tendencia = Tendencia.objects.get(id=tendencia_id)
+        portal = Portal.objects.get(id=portal_id)
         
-        print(f"✅ [CELERY]: Artículo generado con éxito. Longitud: {len(articulo_generado)} caracteres.")
-        print("--- EXTRACTO DEL ARTÍCULO ---")
-        print(articulo_generado[:300] + "...") # Imprimimos los primeros 300 caracteres
+        print(f"🤖 [CELERY]: Agencia IA investigando '{tendencia.termino_busqueda}' para {portal.dominio} en {idioma}...")
         
-        # Aquí en el futuro agregaremos el código para enviar este texto a WordPress
+        # 2. Llamar a los agentes
+        contenido_generado = ejecutar_equipo_redaccion(tema=tendencia.termino_busqueda, nicho=portal.nicho, idioma=idioma)
         
-        return f"Éxito: Artículo sobre {tendencia_nombre} generado."
+        # 3. Guardar en la base de datos (El título lo extraemos dinámicamente o le ponemos uno genérico para la URL)
+        titulo_seo = f"Todo sobre {tendencia.termino_busqueda}"
+        
+        Articulo.objects.create(
+            portal=portal,
+            tendencia=tendencia,
+            titulo=titulo_seo,
+            contenido_html=contenido_generado,
+            idioma=idioma
+        )
+        
+        # Marcamos la tendencia como procesada
+        tendencia.procesado = True
+        tendencia.save()
+        
+        print(f"✅ [CELERY]: Artículo publicado en el portal de {portal.beneficiario.username}!")
+        return True
         
     except Exception as e:
-        print(f"❌ [CELERY ERROR CRÍTICO]: Fallo en CrewAI: {str(e)}")
-        return f"Error: {str(e)}"
-
+        print(f"❌ [CELERY ERROR]: {str(e)}")
+        return False

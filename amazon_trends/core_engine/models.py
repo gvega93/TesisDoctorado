@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db import transaction
 import uuid
+from django.utils.text import slugify
 
 # Reemplazamos el usuario por defecto de Django por nuestro Beneficiario
 class Beneficiario(AbstractUser):
@@ -105,3 +106,33 @@ class Tendencia(models.Model):
         estado = "Procesado" if self.procesado else "Pendiente"
         return f"[{self.fuente}] {self.termino_busqueda} ({estado})"
     
+
+class Articulo(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    portal = models.ForeignKey(Portal, on_delete=models.CASCADE, related_name='articulos')
+    tendencia = models.ForeignKey('Tendencia', on_delete=models.SET_NULL, null=True, blank=True)
+    
+    titulo = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+    contenido_html = models.TextField()
+    idioma = models.CharField(max_length=50, default="Español")
+    fecha_publicacion = models.DateTimeField(auto_now_add=True)
+    vistas = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.titulo)
+            # Para evitar slugs duplicados
+            original_slug = self.slug
+            contador = 1
+            while Articulo.objects.filter(slug=self.slug).exists():
+                self.slug = f'{original_slug}-{contador}'
+                contador += 1
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Artículo"
+        verbose_name_plural = "Artículos"
+
+    def __str__(self):
+        return f"{self.titulo} ({self.idioma})"
